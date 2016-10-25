@@ -1,1 +1,2 @@
 # projectx
+# Python study project
