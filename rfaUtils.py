@@ -6,7 +6,7 @@ from datetime import date
 def make_sure_path_exists(log_path):
     try:
         os.makedirs(log_path)
-    except OSError as e:
+    except OSError as e:    
         print e 
              
 def get_timestamp():
@@ -30,7 +30,7 @@ def qaprint(log_file_handler, log_entry):
         log_file_handler.write(new_line)
         print new_line
     else:
-        "Can't write to log"
+        print("Could not write to log")
         
 def close_log(log_file):
     log_file.close()
