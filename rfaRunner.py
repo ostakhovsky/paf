@@ -3,12 +3,10 @@ Created on Oct 19, 2016
 @author: sashaalexander
 @author: team 9
 '''
-from rfaUtils import getLog, qaPrint, getLocalEnv, getTestCases
+from rfaUtils import getLog, qaPrint, getLocalEnv, getTestCases, closeLog, usage
 import sys
 from __builtin__ import str
 # process command line arguments
-def usage():
-    print ('[ERROR]Invalid parameters. Proper usage: rfaRunner.py --testrun=<testRunId>')
 
 
 if len(sys.argv) < 2:
@@ -38,18 +36,17 @@ else:
 # exit if log creation failed
 if log == -1:
     sys.exit("[ERROR]Could not create log file")
-
+qaPrint(log,"Test suite starts")
 # read test cases
 test_cases = getTestCases(trid)
 
 if test_cases == -1:
-    qaPrint(log,'[ERROR]Could not read test cases')
+    qaPrint(log, '[ERROR]Could not read test cases')
+    closeLog(log)
     sys.exit()
 else:
     qaPrint(log, 'Got test cases. Testrun id is ' + str(trid))
-    qaPrint(log,str(test_cases))
+    for key,value in test_cases.iteritems():
+        qaPrint(log,'Test case #'+ key  + str(value) )
 
-
-# close the log file if it open
-if not log.closed:
-    log.close()
+closeLog(log)

@@ -80,3 +80,12 @@ def getTestCases(testRunId):
     except Exception as ex:
         print ex
         return -1
+
+def usage():
+    print ('[ERROR]Invalid parameters. Proper usage: rfaRunner.py --testrun=<testRunId>')
+
+def closeLog(log):
+    # close the log file if it open
+    if not log.closed:
+        qaPrint(log, 'Test suite ends')
+        log.close()
