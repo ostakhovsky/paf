@@ -68,12 +68,14 @@ def getLocalEnv(propertiesFileName):
    
 def getTestCases(testRunId):
     TEST_CASE_KEYS = ('tcid', 'rest_URL', 'HTTP_method', 'HTTP_RC_desired', 'param_list')
-    testCases = defaultdict(dict)
+    testCases = {}
     try:
         testCasesFile = open(str(testRunId) + '.txt')
         for line in testCasesFile:
             tc = line.rstrip().split("|")
             for i in range(1, len(tc)-1):
+                if tc[0] not in  testCases:
+                    testCases[tc[0]]={}
                 testCases[tc[0]][TEST_CASE_KEYS[i]] = tc[i]
             testCases[tc[0]][TEST_CASE_KEYS[-1]]= tc[-1].split(',')
         return testCases

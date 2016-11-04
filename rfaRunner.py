@@ -19,6 +19,10 @@ try:
         arg = sys.argv[i].split('=')
         if arg[0].lower() == '--testrun':
             trid = int(arg[1])
+            if (trid <0) or (trid >10000):
+                usage()
+                sys.exit("[ERROR]Invalid parameter, value should be [0-10000]")
+
 except Exception:
     sys.exit(usage())
 
@@ -36,7 +40,7 @@ else:
 # exit if log creation failed
 if log == -1:
     sys.exit("[ERROR]Could not create log file")
-qaPrint(log,"Test suite starts")
+qaPrint(log,"[INFO]Test suite starts")
 # read test cases
 test_cases = getTestCases(trid)
 
@@ -45,8 +49,8 @@ if test_cases == -1:
     closeLog(log)
     sys.exit()
 else:
-    qaPrint(log, 'Got test cases. Testrun id is ' + str(trid))
+    qaPrint(log, '[INFO]Got test cases. Testrun id is ' + str(trid))
     for key,value in test_cases.iteritems():
-        qaPrint(log,'Test case #'+ key  + str(value) )
+        qaPrint(log,'[INFO]Test case #'+ key  + str(value) )
 
 closeLog(log)
