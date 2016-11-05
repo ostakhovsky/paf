@@ -55,7 +55,7 @@ def getLocalEnv(propertiesFileName):
         properties = open(propertiesFileName, "r")
         props = {}
         for line in properties:
-            line = line.rstrip()
+            line = line.strip()
             if "=" not in line: continue
             if line.startswith("#"): continue 
             k, v = line.split("=", 1)
@@ -72,7 +72,7 @@ def getTestCases(testRunId):
     try:
         testCasesFile = open(str(testRunId) + '.txt')
         for line in testCasesFile:
-            tc = line.rstrip().split("|")
+            tc = line.strip().split("|")
             for i in range(1, len(tc)-1):
                 if tc[0] not in  testCases:
                     testCases[tc[0]]={}
