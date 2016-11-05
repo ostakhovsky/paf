@@ -3,54 +3,35 @@ Created on Oct 19, 2016
 @author: sashaalexander
 @author: team 9
 '''
-from rfaUtils import getLog, qaPrint, getLocalEnv, getTestCases, closeLog, usage
 import sys
 from __builtin__ import str
+
+from rfaUtils import getLog, qaPrint, getLocalEnv, getTestCases, closeLog, getArguments, logTestCases, validateProperties
+
 # process command line arguments
-
-
-if len(sys.argv) < 2:
-    sys.exit(usage())
-
-testName = sys.argv[0].split('/')[-1].replace('.py', '')
-
-try:
-    for i in range(1, len(sys.argv)):
-        arg = sys.argv[i].split('=')
-        if arg[0].lower() == '--testrun':
-            trid = int(arg[1])
-            if (trid <0) or (trid >10000):
-                usage()
-                sys.exit("[ERROR]Invalid parameter, value should be [0-10000]")
-
-except Exception:
-    sys.exit(usage())
+arguments = getArguments(sys.argv)
 
 # read properties
 localProperties = getLocalEnv('local.properties')
+validateProperties(localProperties)
 
-if localProperties == -1:
-    sys.exit('[ERROR]Could not read properties')
 # get the log file handle
-if 'log_dir' in localProperties.keys():
-    log = getLog(testName, localProperties['log_dir'])
-else:
-    sys.exit("[ERROR]log_dir property is missing")
+log = getLog(arguments['testName'], localProperties['log_dir'])
 
 # exit if log creation failed
 if log == -1:
     sys.exit("[ERROR]Could not create log file")
 qaPrint(log,"[INFO]Test suite starts")
+
 # read test cases
-test_cases = getTestCases(trid)
+test_cases = getTestCases(arguments['trid'])
 
 if test_cases == -1:
     qaPrint(log, '[ERROR]Could not read test cases')
     closeLog(log)
     sys.exit()
 else:
-    qaPrint(log, '[INFO]Got test cases. Testrun id is ' + str(trid))
-    for key,value in test_cases.iteritems():
-        qaPrint(log,'[INFO]Test case #'+ key  + str(value) )
+    qaPrint(log, '[INFO]Got test cases. Testrun id is ' + str(arguments['trid']))
+    logTestCases(test_cases,log)
 
 closeLog(log)

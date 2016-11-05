@@ -6,7 +6,7 @@ Created on Oct 19, 2016
 '''
 from datetime import datetime
 import os
-from _collections import defaultdict
+import sys
 
 
 def getLog(testName, logDir):
@@ -23,7 +23,7 @@ def getLog(testName, logDir):
         # if logs directory(!) doesn't exist, create it
         if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
-        # open log file with prefix and timestamp (platform independent) in Append mode
+            # open log file with prefix and timestamp (platform independent) in Append mode
         log = open(os.path.join(log_dir, testName + "_" + getCurTime("%Y%m%d_%H-%M-%S") + ".log"), "a")
         return log
     except (OSError, IOError):
@@ -50,22 +50,23 @@ def getCurTime(date_time_format):
     date_time = datetime.now().strftime(date_time_format)
     return date_time
 
+
 def getLocalEnv(propertiesFileName):
-    try: 
+    try:
         properties = open(propertiesFileName, "r")
         props = {}
         for line in properties:
             line = line.strip()
             if "=" not in line: continue
-            if line.startswith("#"): continue 
+            if line.startswith("#"): continue
             k, v = line.split("=", 1)
             props[k] = v
-        return props 
+        return props
     except Exception as e:
         print e
         return -1
-    
-   
+
+
 def getTestCases(testRunId):
     TEST_CASE_KEYS = ('tcid', 'rest_URL', 'HTTP_method', 'HTTP_RC_desired', 'param_list')
     testCases = {}
@@ -73,21 +74,54 @@ def getTestCases(testRunId):
         testCasesFile = open(str(testRunId) + '.txt')
         for line in testCasesFile:
             tc = line.strip().split("|")
-            for i in range(1, len(tc)-1):
-                if tc[0] not in  testCases:
-                    testCases[tc[0]]={}
+            for i in range(1, len(tc) - 1):
+                if tc[0] not in testCases:
+                    testCases[tc[0]] = {}
                 testCases[tc[0]][TEST_CASE_KEYS[i]] = tc[i]
-            testCases[tc[0]][TEST_CASE_KEYS[-1]]= tc[-1].split(',')
+            testCases[tc[0]][TEST_CASE_KEYS[-1]] = tc[-1].split(',')
         return testCases
     except Exception as ex:
         print ex
         return -1
 
+
 def usage():
     print ('[ERROR]Invalid parameters. Proper usage: rfaRunner.py --testrun=<testRunId>')
+
 
 def closeLog(log):
     # close the log file if it open
     if not log.closed:
         qaPrint(log, 'Test suite ends')
         log.close()
+
+
+def getArguments(args):
+    arguments = {}
+    if len(args) < 2:
+        sys.exit(usage())
+    try:
+        arguments['testName'] = args[0].split('/')[-1].replace('.py', '')
+        for i in range(1, len(args)):
+            arg = args[i].split('=')
+            if arg[0].lower() == '--testrun':
+                arguments['trid'] = int(arg[1])
+                if (arguments['trid'] not in range(1, 10001)):
+                    usage()
+                    sys.exit("[ERROR]Invalid parameter, value should be [0-10000]")
+        return arguments
+    except Exception:
+        sys.exit(usage())
+
+
+def logTestCases(test_cases,log):
+    for key, value in test_cases.iteritems():
+        qaPrint(log, '[INFO]Test case #' + key + str(value))
+
+
+def validateProperties(properties):
+    if properties == -1:
+        sys.exit('[ERROR]Could not read properties')
+    if 'log_dir'not in properties.keys():
+        sys.exit("[ERROR]log_dir property is missing")
+
