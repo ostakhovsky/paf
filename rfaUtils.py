@@ -114,14 +114,5 @@ def getArguments(args):
         sys.exit(usage())
 
 
-def logTestCases(test_cases,log):
-    for key, value in test_cases.iteritems():
-        qaPrint(log, '[INFO]Test case #' + key + str(value))
 
-
-def validateProperties(properties):
-    if properties == -1:
-        sys.exit('[ERROR]Could not read properties')
-    if 'log_dir'not in properties.keys():
-        sys.exit("[ERROR]log_dir property is missing")
 
