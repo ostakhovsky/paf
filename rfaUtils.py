@@ -68,21 +68,19 @@ def getLocalEnv(propertiesFileName):
 
 
 def getTestCases(testRunId):
-    TEST_CASE_KEYS = ('tcid', 'rest_URL', 'HTTP_method', 'HTTP_RC_desired', 'param_list')
+    TEST_CASE_KEYS = ('rest_URL', 'HTTP_method', 'HTTP_RC_desired', 'param_list')
     testCases = {}
     try:
         testCasesFile = open(str(testRunId) + '.txt')
         for line in testCasesFile:
             tc = line.strip().split("|")
-            for i in range(1, len(tc) - 1):
+            #convert last element to a list
+            tc[-1] = tc[-1].split(',')
+            for i in range(1, len(tc)):
                 #add tcid as a key if it's not there yet
                 if tc[0] not in testCases:
-                    #add empty dict as value
-                    testCases[tc[0]] = {}
-                #fill dict with keys from TEST_CASE_KEYS and values from file except last element
-                testCases[tc[0]][TEST_CASE_KEYS[i]] = tc[i]
-            #split last element by "," , make it a list and add to dict
-            testCases[tc[0]][TEST_CASE_KEYS[-1]] = tc[-1].split(',')
+                    #fill dict with keys from TEST_CASE_KEYS and slice of list , skipping 1st element - tcid
+                    testCases[tc[0]] = dict(zip(TEST_CASE_KEYS,tc[1:]))
         return testCases
     except Exception as ex:
         print ex
