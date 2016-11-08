@@ -75,9 +75,13 @@ def getTestCases(testRunId):
         for line in testCasesFile:
             tc = line.strip().split("|")
             for i in range(1, len(tc) - 1):
+                #add tcid as a key if it's not there yet
                 if tc[0] not in testCases:
+                    #add empty dict as value
                     testCases[tc[0]] = {}
+                #fill dict with keys from TEST_CASE_KEYS and values from file except last element
                 testCases[tc[0]][TEST_CASE_KEYS[i]] = tc[i]
+            #split last element by "," , make it a list and add to dict
             testCases[tc[0]][TEST_CASE_KEYS[-1]] = tc[-1].split(',')
         return testCases
     except Exception as ex:
