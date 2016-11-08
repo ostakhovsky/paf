@@ -57,13 +57,17 @@ def getLocalEnv(propertiesFileName):
         props = {}
         for line in properties:
             line = line.strip()
+            #skip line without "="
             if "=" not in line: continue
+            #skip comments
             if line.startswith("#"): continue
             k, v = line.split("=", 1)
             props[k] = v
+        if not properties.closed: properties.close()
         return props
     except Exception as e:
         print e
+        if not properties.closed: properties.close()
         return -1
 
 
@@ -72,15 +76,22 @@ def getTestCases(testRunId):
     testCases = {}
     try:
         testCasesFile = open(str(testRunId) + '.txt')
+        #loop through lines in file
         for line in testCasesFile:
-            tc = line.strip().split("|")
+            line = line.strip()
+            #skip empty line
+            if line == '': continue
+            #skip comments
+            if line.startswith("#"): continue
             #convert last element to a list
+            tc = line.split("|")
             tc[-1] = tc[-1].split(',')
-            for i in range(1, len(tc)):
-                #add tcid as a key if it's not there yet
-                if tc[0] not in testCases:
-                    #fill dict with keys from TEST_CASE_KEYS and slice of list , skipping 1st element - tcid
-                    testCases[tc[0]] = dict(zip(TEST_CASE_KEYS,tc[1:]))
+            if tc[0] not in testCases:
+                #fill dict with keys from TEST_CASE_KEYS and slice of list , skipping 1st element - tcid
+                testCases[tc[0]] = dict(zip(TEST_CASE_KEYS, tc[1:]))
+            else:
+                print("[INFO]Duplicated tcid {}, skipping line".format(tc[0]))
+        if not testCasesFile.closed: testCasesFile.close()
         return testCases
     except Exception as ex:
         print ex
@@ -94,7 +105,7 @@ def usage():
 def closeLog(log):
     # close the log file if it open
     if not log.closed:
-        qaPrint(log, 'Test suite ends')
+        qaPrint(log, '[INFO]Test suite ends')
         log.close()
 
 
