@@ -71,7 +71,7 @@ def getLocalEnv(propertiesFileName):
         return -1
 
 
-def getTestCases(testRunId):
+def getTestCases(testRunId,log):
     TEST_CASE_KEYS = ('rest_URL', 'HTTP_method', 'HTTP_RC_desired', 'param_list')
     testCases = {}
     try:
@@ -90,7 +90,7 @@ def getTestCases(testRunId):
                 #fill dict with keys from TEST_CASE_KEYS and slice of list , skipping 1st element - tcid
                 testCases[tc[0]] = dict(zip(TEST_CASE_KEYS, tc[1:]))
             else:
-                print("[INFO]Duplicated tcid {}, skipping line".format(tc[0]))
+                qaPrint(log,"[INFO]Duplicated tcid {}, skipping line".format(tc[0]))
         if not testCasesFile.closed: testCasesFile.close()
         return testCases
     except Exception as ex:

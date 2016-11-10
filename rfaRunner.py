@@ -15,8 +15,8 @@ arguments = getArguments(sys.argv)
 localProperties = getLocalEnv('local.properties')
 if localProperties == -1:
     sys.exit('[ERROR]Could not read properties')
-if 'log_dir'not in localProperties.keys():
-        sys.exit("[ERROR]log_dir property is missing")
+if 'log_dir' not in localProperties.keys():
+    sys.exit("[ERROR]log_dir property is missing")
 
 # get the log file handle
 log = getLog(arguments['testName'], localProperties['log_dir'])
@@ -27,7 +27,7 @@ if log == -1:
 qaPrint(log, "[INFO]Test suite starts")
 
 # read test cases
-test_cases = getTestCases(arguments['trid'])
+test_cases = getTestCases(arguments['trid'], log)
 
 if test_cases == -1:
     qaPrint(log, '[ERROR]Could not read test cases')
