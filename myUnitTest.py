@@ -20,7 +20,11 @@ class TestRfaUtils(unittest.TestCase):
         self.assertEqual(buildURL(["/myhost.com", "/files/show_all"]), "myhost.com/files/show_all")   
     def test_buildUrls8(self):
         self.assertEqual(buildURL(["/myhost.com/", "/files/show_all/"]), "myhost.com/files/show_all")
-               
+    def test_buildUrls9(self):
+        self.assertEqual(buildURL(["/myhost.com/", "/files/show_all/", " "]), "myhost.com/files/show_all")
+    def test_buildUrls10(self):
+        self.assertEqual(buildURL(["/myhost.com/", " /files/show_all/ "]), "myhost.com/files/show_all")
+                                           
         
     def test_getHttpResponse1(self):
         response = getHttpResponse('https://api.github.com','GET', {'username':'user', 'password':'pass'})

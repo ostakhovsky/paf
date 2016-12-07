@@ -151,20 +151,8 @@ def getDbCursor(cnx):
 def queryDb():
     pass
 
-
 def buildURL(list_of_strings):
-    url = ""
-    if len(list_of_strings) > 0:
-        url = list_of_strings[0].strip("/")
-
-    for i in range(1, len(list_of_strings)):
-        st = list_of_strings[i]
-        if st == "":
-            continue
-        url = url + "/" + st.strip("/")
-    url = url.strip("/")
-    return url
-
+    return ''.join([s.strip(' /') + '/' for s in list_of_strings if s.strip(" /") != ''])[:-1]
 
 def getHttpResponse(url, http_method, parameters):
     response = -1
