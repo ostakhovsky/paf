@@ -7,6 +7,8 @@ Created on Oct 19, 2016
 from datetime import datetime
 import os
 import sys
+import mysql.connector
+import requests
 
 
 def getLog(testName, logDir):
@@ -57,9 +59,9 @@ def getLocalEnv(propertiesFileName):
         props = {}
         for line in properties:
             line = line.strip()
-            #skip line without "="
+            # skip line without "="
             if "=" not in line: continue
-            #skip comments
+            # skip comments
             if line.startswith("#"): continue
             k, v = line.split("=", 1)
             props[k] = v
@@ -71,26 +73,26 @@ def getLocalEnv(propertiesFileName):
         return -1
 
 
-def getTestCases(testRunId,log):
+def getTestCases(testRunId, log):
     TEST_CASE_KEYS = ('rest_URL', 'HTTP_method', 'HTTP_RC_desired', 'param_list')
     testCases = {}
     try:
         testCasesFile = open(str(testRunId) + '.txt')
-        #loop through lines in file
+        # loop through lines in file
         for line in testCasesFile:
             line = line.strip()
-            #skip empty line
+            # skip empty line
             if line == '': continue
-            #skip comments
+            # skip comments
             if line.startswith("#"): continue
-            #convert last element to a list
+            # convert last element to a list
             tc = line.split("|")
             tc[-1] = tc[-1].split(',')
             if tc[0] not in testCases:
-                #fill dict with keys from TEST_CASE_KEYS and slice of list , skipping 1st element - tcid
+                # fill dict with keys from TEST_CASE_KEYS and slice of list , skipping 1st element - tcid
                 testCases[tc[0]] = dict(zip(TEST_CASE_KEYS, tc[1:]))
             else:
-                qaPrint(log,"[INFO]Duplicated tcid {}, skipping line".format(tc[0]))
+                qaPrint(log, "[INFO]Duplicated tcid {}, skipping line".format(tc[0]))
         if not testCasesFile.closed: testCasesFile.close()
         return testCases
     except Exception as ex:
@@ -127,5 +129,74 @@ def getArguments(args):
         sys.exit(usage())
 
 
+def getDbConnection(url, username, user_password):
+    try:
+        cnx = mysql.connector.connect(user=username, password=user_password,
+                                      host=url,
+                                      database='bugs')
+    except Exception as e:
+        print e
+        cnx = -1
+    return cnx
 
+
+def getDbCursor(cnx):
+    try:
+        cursor = cnx.cursor()
+    except Exception as e:
+        print e
+        cursor = -1
+    return cursor
+
+
+def queryDb():
+    pass
+
+
+def buildURL(list_of_strings):
+    url = ""
+    if len(list_of_strings) > 0:
+        url = list_of_strings[0].strip("/")
+
+    for i in range(1, len(list_of_strings)):
+        st = list_of_strings[i]
+        if st == "":
+            continue
+        url = url + "/" + st.strip("/")
+    url = url.strip("/")
+    return url
+
+
+def getHttpResponse(url, http_method, parameters):
+    response = -1
+    try:
+        if http_method == 'POST':
+            response = requests.post(url, auth=(parameters['username'], parameters['password']))
+            return response
+        if http_method == 'GET':
+            response = requests.get(url, auth=(parameters['username'], parameters['password']))
+            return response
+        if http_method == 'HEAD':
+            response = requests.head(url, auth=(parameters['username'], parameters['password']))
+            return response
+        if http_method == 'DELETE':
+            response = requests.delete(url, auth=(parameters['username'], parameters['password']))
+            return response
+        if http_method == 'OPTIONS':
+            response = requests.options(url, auth=(parameters['username'], parameters['password']))
+            return response
+    except Exception as e:
+        print e
+        return response
+
+
+def getHttpResponseCode(response, indicator):
+    if indicator == 'string':
+        return str(response.status_code)
+    if indicator == 'int':
+        return response.status_code
+
+
+def checkEnv():
+    return True
 
