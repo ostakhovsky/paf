@@ -1,10 +1,8 @@
 '''
 Created on Oct 19, 2016
 @author: sashaalexander
-@author: team 9
 '''
 import sys
-from __builtin__ import str
 
 from rfaUtils import getLog, qaPrint, getLocalEnv, getTestCases, closeLog, getArguments
 
