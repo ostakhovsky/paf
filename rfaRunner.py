@@ -1,7 +1,3 @@
-'''
-Created on Oct 19, 2016
-@author: sashaalexander
-'''
 import sys
 
 from rfaUtils import getLog, qaPrint, getLocalEnv, getTestCases, closeLog, getArguments
